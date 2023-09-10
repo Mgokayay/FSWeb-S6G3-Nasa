@@ -3,41 +3,48 @@ import "./App.css";
 import axios from "axios";
 import ApodData from "./components/ApodData";
 import Header from "./components/Header";
- 
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 function App() {
 
-  const [apodData, setApodData] = useState(null);
-  const [date, setDate] = useState("2020-08-31");
-  const changeHandler = (event) =>{
-    const {value} = event.target
-    setApodData(null);
-    setDate(value);
-  }
+const [apodData, setApodData] = useState(null)
+const [date, setDate] = useState("2020-08-31")
+const changeHandler = (event) => {
+  const {value} =  event.target
+  setApodData(null);
+  setDate(value);
+}
+
+  useEffect(() => {
+    let startDate = date;
+    let realDate = new Date(date);
+    realDate.setDate(realDate.getDate() + 3);
+    let endDate = realDate.toISOString().slice(0,10);
 
 
-  useEffect (() =>{
     axios
-      .get(`https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&date=${date}`)
+      .get(`https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&start_date=${startDate}&end_date=${endDate}`)
       .then(response => {
         setApodData(response.data);
       })
       .catch(error => {
         console.error("APOD Data alınamadı!", error);
       });
-  },[date]);
+  }, [date]); 
 
   return (
     <div>
-    <Header date={date} changeHandler={changeHandler} />
-    <div className="App">
-      
+      <Header date={date} changeHandler={changeHandler} />
+      <div className="App">
       {apodData ? 
-      < apodData apodData={apodData} /> :
+        <ApodData apodData = {apodData} /> :
       <h2>
-        Yükleniyor...</h2>}
+        Yükleniyor...
+      </h2>}
+
     </div>
     </div>
-  )
+  );
 }
 
 export default App;
